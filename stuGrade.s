@@ -1,16 +1,15 @@
-	.file	"main.c"
-	.intel_syntax noprefix
-	.comm	_students, 4000, 6
-	.globl	_count
+	.intel_syntax noprefix        #语法类型
+	.comm	_students, 4000, 6     #students 结构体声明
+	.globl	_count    #学生人数全局变量
 	.bss
 	.align 4
 _count:
 	.space 4
-	.def	___main;	.scl	2;	.type	32;	.endef
+	.def	___main;	.scl	2;	.type	32;	.endef   #使用的指令结构声明
 	.text
 	.globl	_main
 	.def	_main;	.scl	2;	.type	32;	.endef
-_main:
+_main:                        #main 函数定义
 	push	ebp
 	mov	ebp, esp
 	and	esp, -16
@@ -19,23 +18,23 @@ _main:
 	call	_mainMenu
 	mov	eax, 0
 	leave
-	ret
-	.section .rdata,"dr"
+	ret                       #离开return 0
+	.section .rdata,"dr"      #子函数声明定义开始 & 定义只读数据段
 LC0:
 	.ascii "Please input your choice:\0"
 LC1:
 	.ascii "%d\0"
 LC2:
 	.ascii "your choice is error!\0"
-	.text
+	.text                     #定义代码段
 	.globl	_mainMenu
 	.def	_mainMenu;	.scl	2;	.type	32;	.endef
-_mainMenu:
+_mainMenu:                      #主菜单函数定义
 	push	ebp
 	mov	ebp, esp
 	sub	esp, 40
 L14:
-	call	_mymenu
+	call	_mymenu             #调用显示菜单函数
 	mov	DWORD PTR [esp], OFFSET FLAT:LC0
 	call	_printf
 	lea	eax, [ebp-12]
@@ -46,10 +45,10 @@ L14:
 	cmp	eax, 7
 	ja	L4
 	mov	eax, DWORD PTR L6[0+eax*4]
-	jmp	eax
-	.section .rdata,"dr"
+	jmp	eax                              
+	.section .rdata,"dr"       
 	.align 4
-L6:
+L6:                         #switch 菜单选择项
 	.long	L4
 	.long	L5
 	.long	L7
@@ -59,7 +58,7 @@ L6:
 	.long	L11
 	.long	L12
 	.text
-L5:
+L5:                             #各选择项所调用的函数
 	mov	eax, DWORD PTR _count
 	mov	DWORD PTR [esp+4], eax
 	mov	DWORD PTR [esp], OFFSET FLAT:_students
@@ -104,7 +103,7 @@ L4:
 	call	_puts
 L13:
 	jmp	L14
-	.section .rdata,"dr"
+	.section .rdata,"dr"                         #定义显示菜单函数
 	.align 4
 LC3:
 	.ascii "*1.Add grades info for a student\0"
@@ -153,7 +152,7 @@ _mymenu:
 	call	_putchar
 	leave
 	ret
-	.section .rdata,"dr"
+	.section .rdata,"dr"                     #添加学生成绩信息函数定义
 LC10:
 	.ascii "\12Please input student ID:\0"
 LC11:
@@ -350,7 +349,7 @@ L25:
 	mov	eax, 0
 	leave
 	ret
-	.section .rdata,"dr"
+	.section .rdata,"dr"                       #查找函数函数定义
 LC23:
 	.ascii "\12No student info can search!\0"
 	.align 4
@@ -423,7 +422,7 @@ L35:
 L37:
 	leave
 	ret
-	.section .rdata,"dr"
+	.section .rdata,"dr"              #修改学生成绩函数定义
 LC25:
 	.ascii "\12No student can update\0"
 	.align 4
@@ -488,7 +487,7 @@ L41:
 L45:
 	leave
 	ret
-	.section .rdata,"dr"
+	.section .rdata,"dr"      #实际修改学生成绩信息函数定义
 	.align 4
 LC28:
 	.ascii "\12The fllowing info will be alter:\0"
@@ -617,7 +616,7 @@ L48:
 	mov	eax, 0
 	leave
 	ret
-	.section .rdata,"dr"
+	.section .rdata,"dr"               #删除学生成绩信息函数
 LC32:
 	.ascii "\12No students info can delete\0"
 	.align 4
@@ -715,7 +714,7 @@ L53:
 L59:
 	leave
 	ret
-	.section .rdata,"dr"
+	.section .rdata,"dr"         #删除学生信息操作函数定义
 	.align 4
 LC38:
 	.ascii "Student ID is %d has been deleted!\12\0"
@@ -783,7 +782,7 @@ L61:
 	mov	eax, 0
 	leave
 	ret
-	.section .rdata,"dr"
+	.section .rdata,"dr"           #学生成绩排序函数定义
 LC39:
 	.ascii "\12No student can sort!\0"
 	.align 4
@@ -812,7 +811,7 @@ L65:
 	add	eax, OFFSET FLAT:L69
 	mov	eax, DWORD PTR [eax]
 	jmp	eax
-	.section .rdata,"dr"
+	.section .rdata,"dr"     #switch 菜单选项
 	.align 4
 L69:
 	.long	L67
@@ -911,7 +910,7 @@ L78:
 L66:
 	leave
 	ret
-	.section .rdata,"dr"
+	.section .rdata,"dr"     #显示排序菜单函数定义
 LC41:
 	.ascii "*1.Sort by C Grades ASC \0"
 LC42:
@@ -973,7 +972,7 @@ _printSortMenu:
 	mov	eax, DWORD PTR [ebp-12]
 	leave
 	ret
-	.globl	_popSort
+	.globl	_popSort              #冒泡排序函数定义
 	.def	_popSort;	.scl	2;	.type	32;	.endef
 _popSort:
 	push	ebp
@@ -1314,7 +1313,7 @@ L95:
 	mov	eax, 0
 	leave
 	ret
-	.section .rdata,"dr"
+	.section .rdata,"dr"    #学生信息写入文件函数定义
 LC51:
 	.ascii "w\0"
 LC52:
@@ -1436,7 +1435,7 @@ L104:
 L102:
 	leave
 	ret
-	.section .rdata,"dr"
+	.section .rdata,"dr"        #学生信息文件读取函数
 LC58:
 	.ascii "r\0"
 	.align 4
@@ -1556,7 +1555,7 @@ L109:
 	pop	edi
 	pop	ebp
 	ret
-	.section .rdata,"dr"
+	.section .rdata,"dr"          #全部学生成绩信息打印函数
 LC63:
 	.ascii "\12No student info can display!\0"
 	.text
@@ -1586,7 +1585,7 @@ L116:
 	jl	L117
 	leave
 	ret
-	.section .rdata,"dr"
+	.section .rdata,"dr"    #单个学生成绩信息打印函数
 	.align 4
 LC64:
 	.ascii "\12StuId: %d, StuName: %s, CGrades: %.2f, MGrades: %.2f, EGrades: %.2f, SumGrades: %.2f\12\0"
@@ -1663,8 +1662,7 @@ _printGrade:
 	call	_printf
 	leave
 	ret
-	.ident	"GCC: (tdm-1) 4.9.2"
-	.def	_printf;	.scl	2;	.type	32;	.endef
+	.def	_printf;	.scl	2;	.type	32;	.endef         #所用外部语法声明
 	.def	_scanf;	.scl	2;	.type	32;	.endef
 	.def	_exit;	.scl	2;	.type	32;	.endef
 	.def	_puts;	.scl	2;	.type	32;	.endef
