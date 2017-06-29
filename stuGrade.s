@@ -157,7 +157,7 @@ _mymenu:
 LC10:
 	.ascii "\12Please input student ID:\0"
 LC11:
-	.ascii "This student exists\0"
+	.ascii "This student exists!\0"
 LC12:
 	.ascii "\12Please input student Name:\0"
 LC13:
@@ -1316,20 +1316,26 @@ L95:
 	ret
 	.section .rdata,"dr"
 LC51:
-	.ascii "wb\0"
+	.ascii "w\0"
 LC52:
 	.ascii "test.txt\0"
 LC53:
-	.ascii "\12Can't open this file!\0"
+	.ascii "\12Can't  this file!\0"
 LC54:
+	.ascii "%d\12\0"
+LC55:
 	.ascii "\12Writen file error!\0"
+LC56:
+	.ascii " %d  %s %.2f %.2f %.2f %.2f\12\0"
+LC57:
+	.ascii "\12 Writen file error!\0"
 	.text
 	.globl	_fileWrite
 	.def	_fileWrite;	.scl	2;	.type	32;	.endef
 _fileWrite:
 	push	ebp
 	mov	ebp, esp
-	sub	esp, 40
+	sub	esp, 72
 	mov	DWORD PTR [esp+4], OFFSET FLAT:LC51
 	mov	DWORD PTR [esp], OFFSET FLAT:LC52
 	call	_fopen
@@ -1341,16 +1347,16 @@ _fileWrite:
 	mov	eax, -1
 	jmp	L102
 L101:
+	mov	eax, DWORD PTR _count
+	mov	DWORD PTR [esp+8], eax
+	mov	DWORD PTR [esp+4], OFFSET FLAT:LC54
 	mov	eax, DWORD PTR [ebp-16]
-	mov	DWORD PTR [esp+12], eax
-	mov	DWORD PTR [esp+8], 1
-	mov	DWORD PTR [esp+4], 4
-	mov	DWORD PTR [esp], OFFSET FLAT:_count
-	call	_fwrite
-	cmp	eax, 1
-	je	L103
-	mov	DWORD PTR [esp], OFFSET FLAT:LC54
-	call	_puts
+	mov	DWORD PTR [esp], eax
+	call	_fprintf
+	test	eax, eax
+	jne	L103
+	mov	DWORD PTR [esp], OFFSET FLAT:LC55
+	call	_printf
 	mov	eax, -1
 	jmp	L102
 L103:
@@ -1362,17 +1368,59 @@ L106:
 	sal	eax, 2
 	add	eax, edx
 	sal	eax, 3
-	lea	edx, _students[eax]
+	add	eax, OFFSET FLAT:_students+32
+	fld	DWORD PTR [eax+4]
+	mov	edx, DWORD PTR [ebp-12]
+	mov	eax, edx
+	sal	eax, 2
+	add	eax, edx
+	sal	eax, 3
+	add	eax, OFFSET FLAT:_students+32
+	fld	DWORD PTR [eax]
+	mov	edx, DWORD PTR [ebp-12]
+	mov	eax, edx
+	sal	eax, 2
+	add	eax, edx
+	sal	eax, 3
+	add	eax, OFFSET FLAT:_students+16
+	fld	DWORD PTR [eax+12]
+	mov	edx, DWORD PTR [ebp-12]
+	mov	eax, edx
+	sal	eax, 2
+	add	eax, edx
+	sal	eax, 3
+	add	eax, OFFSET FLAT:_students+16
+	fld	DWORD PTR [eax+8]
+	fxch	st(3)
+	mov	edx, DWORD PTR [ebp-12]
+	mov	eax, edx
+	sal	eax, 2
+	add	eax, edx
+	sal	eax, 3
+	add	eax, OFFSET FLAT:_students
+	lea	ecx, [eax+4]
+	mov	edx, DWORD PTR [ebp-12]
+	mov	eax, edx
+	sal	eax, 2
+	add	eax, edx
+	sal	eax, 3
+	add	eax, OFFSET FLAT:_students
+	mov	eax, DWORD PTR [eax]
+	fstp	QWORD PTR [esp+40]
+	fxch	st(1)
+	fstp	QWORD PTR [esp+32]
+	fstp	QWORD PTR [esp+24]
+	fstp	QWORD PTR [esp+16]
+	mov	DWORD PTR [esp+12], ecx
+	mov	DWORD PTR [esp+8], eax
+	mov	DWORD PTR [esp+4], OFFSET FLAT:LC56
 	mov	eax, DWORD PTR [ebp-16]
-	mov	DWORD PTR [esp+12], eax
-	mov	DWORD PTR [esp+8], 1
-	mov	DWORD PTR [esp+4], 40
-	mov	DWORD PTR [esp], edx
-	call	_fwrite
-	cmp	eax, 1
-	je	L105
-	mov	DWORD PTR [esp], OFFSET FLAT:LC54
-	call	_puts
+	mov	DWORD PTR [esp], eax
+	call	_fprintf
+	test	eax, eax
+	jne	L105
+	mov	DWORD PTR [esp], OFFSET FLAT:LC57
+	call	_printf
 	mov	eax, -1
 	jmp	L102
 L105:
@@ -1389,70 +1437,127 @@ L102:
 	leave
 	ret
 	.section .rdata,"dr"
-LC55:
+LC58:
 	.ascii "r\0"
 	.align 4
-LC56:
-	.ascii "fileRead error,No such this file!\0"
+LC59:
+	.ascii "FileRead error,No such this file!\0"
+LC60:
+	.ascii "%d \0"
+LC61:
+	.ascii " %d %s %f %f %f %f\0"
+LC62:
+	.ascii "\12FileRead error!\0"
 	.text
 	.globl	_fileRead
 	.def	_fileRead;	.scl	2;	.type	32;	.endef
 _fileRead:
 	push	ebp
 	mov	ebp, esp
-	sub	esp, 40
-	mov	DWORD PTR [esp+4], OFFSET FLAT:LC55
+	push	edi
+	push	esi
+	push	ebx
+	sub	esp, 76
+	mov	DWORD PTR [esp+4], OFFSET FLAT:LC58
 	mov	DWORD PTR [esp], OFFSET FLAT:LC52
 	call	_fopen
-	mov	DWORD PTR [ebp-16], eax
-	cmp	DWORD PTR [ebp-16], 0
+	mov	DWORD PTR [ebp-32], eax
+	cmp	DWORD PTR [ebp-32], 0
 	jne	L108
-	mov	DWORD PTR [esp], OFFSET FLAT:LC56
+	mov	DWORD PTR [esp], OFFSET FLAT:LC59
 	call	_puts
 	mov	eax, -1
 	jmp	L109
 L108:
-	mov	eax, DWORD PTR [ebp-16]
-	mov	DWORD PTR [esp+12], eax
-	mov	DWORD PTR [esp+8], 1
-	mov	DWORD PTR [esp+4], 4
-	mov	DWORD PTR [esp], OFFSET FLAT:_count
-	call	_fread
-	cmp	eax, 1
+	mov	DWORD PTR [esp+8], OFFSET FLAT:_count
+	mov	DWORD PTR [esp+4], OFFSET FLAT:LC60
+	mov	eax, DWORD PTR [ebp-32]
+	mov	DWORD PTR [esp], eax
+	call	_fscanf
+	test	eax, eax
 	je	L110
-	mov	DWORD PTR _count, -1
+	mov	DWORD PTR [ebp-28], 0
 	jmp	L111
-L110:
-	mov	DWORD PTR [ebp-12], 0
-	jmp	L112
-L113:
-	mov	edx, DWORD PTR [ebp-12]
+L112:
+	mov	edx, DWORD PTR [ebp-28]
 	mov	eax, edx
 	sal	eax, 2
 	add	eax, edx
 	sal	eax, 3
-	lea	edx, _students[eax]
-	mov	eax, DWORD PTR [ebp-16]
-	mov	DWORD PTR [esp+12], eax
-	mov	DWORD PTR [esp+8], 1
-	mov	DWORD PTR [esp+4], 40
-	mov	DWORD PTR [esp], edx
-	call	_fread
-	add	DWORD PTR [ebp-12], 1
-L112:
-	mov	eax, DWORD PTR _count
-	cmp	DWORD PTR [ebp-12], eax
-	jl	L113
+	add	eax, 32
+	add	eax, OFFSET FLAT:_students
+	add	eax, 4
+	mov	DWORD PTR [ebp-44], eax
+	mov	edx, DWORD PTR [ebp-28]
+	mov	eax, edx
+	sal	eax, 2
+	add	eax, edx
+	sal	eax, 3
+	add	eax, 32
+	lea	edi, _students[eax]
+	mov	edx, DWORD PTR [ebp-28]
+	mov	eax, edx
+	sal	eax, 2
+	add	eax, edx
+	sal	eax, 3
+	add	eax, 16
+	add	eax, OFFSET FLAT:_students
+	lea	esi, [eax+12]
+	mov	edx, DWORD PTR [ebp-28]
+	mov	eax, edx
+	sal	eax, 2
+	add	eax, edx
+	sal	eax, 3
+	add	eax, 16
+	add	eax, OFFSET FLAT:_students
+	lea	ebx, [eax+8]
+	mov	edx, DWORD PTR [ebp-28]
+	mov	eax, edx
+	sal	eax, 2
+	add	eax, edx
+	sal	eax, 3
+	add	eax, OFFSET FLAT:_students
+	lea	ecx, [eax+4]
+	mov	edx, DWORD PTR [ebp-28]
+	mov	eax, edx
+	sal	eax, 2
+	add	eax, edx
+	sal	eax, 3
+	add	eax, OFFSET FLAT:_students
+	mov	edx, DWORD PTR [ebp-44]
+	mov	DWORD PTR [esp+28], edx
+	mov	DWORD PTR [esp+24], edi
+	mov	DWORD PTR [esp+20], esi
+	mov	DWORD PTR [esp+16], ebx
+	mov	DWORD PTR [esp+12], ecx
+	mov	DWORD PTR [esp+8], eax
+	mov	DWORD PTR [esp+4], OFFSET FLAT:LC61
+	mov	eax, DWORD PTR [ebp-32]
+	mov	DWORD PTR [esp], eax
+	call	_fscanf
+	add	DWORD PTR [ebp-28], 1
 L111:
-	mov	eax, DWORD PTR [ebp-16]
+	mov	eax, DWORD PTR _count
+	cmp	DWORD PTR [ebp-28], eax
+	jl	L112
+	jmp	L113
+L110:
+	mov	DWORD PTR [esp], OFFSET FLAT:LC62
+	call	_puts
+L113:
+	mov	eax, DWORD PTR [ebp-32]
 	mov	DWORD PTR [esp], eax
 	call	_fclose
 	mov	eax, 0
 L109:
-	leave
+	add	esp, 76
+	pop	ebx
+	pop	esi
+	pop	edi
+	pop	ebp
 	ret
 	.section .rdata,"dr"
-LC57:
+LC63:
 	.ascii "\12No student info can display!\0"
 	.text
 	.globl	_printAllGrade
@@ -1463,7 +1568,7 @@ _printAllGrade:
 	sub	esp, 40
 	cmp	DWORD PTR [ebp+12], 0
 	jne	L115
-	mov	DWORD PTR [esp], OFFSET FLAT:LC57
+	mov	DWORD PTR [esp], OFFSET FLAT:LC63
 	call	_puts
 L115:
 	mov	DWORD PTR [ebp-12], 0
@@ -1483,7 +1588,7 @@ L116:
 	ret
 	.section .rdata,"dr"
 	.align 4
-LC58:
+LC64:
 	.ascii "\12StuId: %d, StuName: %s, CGrades: %.2f, MGrades: %.2f, EGrades: %.2f, SumGrades: %.2f\12\0"
 	.text
 	.globl	_printGrade
@@ -1554,7 +1659,7 @@ _printGrade:
 	fstp	QWORD PTR [esp+12]
 	mov	DWORD PTR [esp+8], ecx
 	mov	DWORD PTR [esp+4], eax
-	mov	DWORD PTR [esp], OFFSET FLAT:LC58
+	mov	DWORD PTR [esp], OFFSET FLAT:LC64
 	call	_printf
 	leave
 	ret
@@ -1567,6 +1672,6 @@ _printGrade:
 	.def	_fflush;	.scl	2;	.type	32;	.endef
 	.def	_strcpy;	.scl	2;	.type	32;	.endef
 	.def	_fopen;	.scl	2;	.type	32;	.endef
-	.def	_fwrite;	.scl	2;	.type	32;	.endef
+	.def	_fprintf;	.scl	2;	.type	32;	.endef
 	.def	_fclose;	.scl	2;	.type	32;	.endef
-	.def	_fread;	.scl	2;	.type	32;	.endef
+	.def	_fscanf;	.scl	2;	.type	32;	.endef

@@ -107,7 +107,7 @@ int insertGrade(stu stu[], int n){
     flag =0;
     for(i=0;i<n;i++){
         if(stu[i].sId == sIdTmp){
-            printf("This student exists\n");
+            printf("This student exists!\n");
             flag = 1;
                 }
             }
@@ -360,19 +360,20 @@ int popSort(stu stu[], int n, int type, int sortType){
 int fileWrite(){
     FILE *fp;
     int i;
-    if((fp = fopen("test.txt","wb")) == NULL){
-        printf("\nCan't open this file!\n");
+    if((fp = fopen("test.txt","w")) == NULL){
+        printf("\nCan't  this file!\n");
         return -1;
     }
-    if (fwrite(&count,sizeof(int),1,fp) !=1){
-        printf("\nWriten file error!\n");
+    if(!fprintf(fp,"%d\n",count)){
+        printf("\nWriten file error!");
         return -1;
     }
     for (i=0;i<count;i++){
-    if (fwrite(&students[i],sizeof(stu),1,fp) !=1){
-        printf("\nWriten file error!\n");
+
+    if(!fprintf(fp," %d  %s %.2f %.2f %.2f %.2f\n",students[i].sId,students[i].sName,students[i].sGradeC,students[i].sGradeM,students[i].sGradeE,students[i].sumGrade)){
+        printf("\n Writen file error!");
         return -1;
-        }
+    }
     }
     fclose(fp);
     return 0;
@@ -382,15 +383,15 @@ int fileRead(){
     FILE *fp;
     int i;
     if((fp = fopen("test.txt","r")) == NULL){
-    printf("fileRead error,No such this file!\n");
+    printf("FileRead error,No such this file!\n");
     return -1;
     }
-    if (fread(&count,sizeof(int),1,fp) != 1){
-        count = -1;
-    }else{
+    if (fscanf(fp,"%d ",&count)){
         for(i=0;i<count;i++){
-            fread(&students[i],sizeof(stu),1,fp);
+            fscanf(fp," %d %s %f %f %f %f",&students[i].sId,students[i].sName,&students[i].sGradeC,&students[i].sGradeM,&students[i].sGradeE,&students[i].sumGrade);
         }
+    }else{
+    printf("\nFileRead error!\n");
     }
     fclose(fp);
     return 0;
