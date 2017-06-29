@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1498709705 source:f:\stugrade\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
