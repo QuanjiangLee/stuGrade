@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1498716076 source:f:\stugrade\main.c
+1498792256 source:f:\stugrade\main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>

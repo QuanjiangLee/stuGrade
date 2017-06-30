@@ -166,20 +166,23 @@ int searchGrade(stu stu[], int n){
 }
 
 int updateGrade(stu stu[],int n){
-    int i,sId;
+    int i,sId,flag = 1;
     if(n == 0){
         printf("\nNo student can update\n");
         return -1;
     }
     printf("\nPlease input student ID:");
     scanf("%d",&sId);
+    flag =0;
     for ( i=0;i<n;i++){
         if(stu[i].sId == sId){
             printf("this student is already finded!\n");
             updateThings(stu, i);
-        }else {
-        printf("No student info can be finded\n");
+            flag = 1;
         }
+    }
+    if(flag == 0){
+        printf("No student info can be finded\n");
     }
     mainMenu();
     return 0;
@@ -189,7 +192,7 @@ int updateThings(stu stu[], int n){ //n带表某个学生
     char YON;
     char sNameTmp[20];
     float sGradeC,sGradeM,sGradeE;
-    printf("\nPlease input student ID:");
+    printf("\nPlease input student Name:");
     scanf("%s",sNameTmp);
     printf("\nPlease input C Grades:");
     scanf("%f",&sGradeC);
@@ -215,7 +218,7 @@ int updateThings(stu stu[], int n){ //n带表某个学生
     return 0;
 }
 int deleteGrade(stu stu[], int n){
-    int i,sId;
+    int i,sId,flag = 1;
     char YON;
     if(count == 0){
         printf("\nNo students info can delete\n");
@@ -223,6 +226,7 @@ int deleteGrade(stu stu[], int n){
     }
     printf("\nPlease input student ID what you want to delete:");
     scanf("%d",&sId);
+    flag = 0;
     for ( i=0;i<n;i++){
         if(stu[i].sId == sId){
             printf(" The fllowing info will be deleted:\n");
@@ -235,9 +239,11 @@ int deleteGrade(stu stu[], int n){
             }else{
                 printf("You quit this delete operation\n");
             }
-        }else {
+            flag = 1;
+        }
+    }
+    if(flag == 0){
         printf("\nNo student info can be finded!\n");
-        };
     }
     mainMenu();
     return 0;
@@ -245,7 +251,7 @@ int deleteGrade(stu stu[], int n){
 
 int deteleThings(stu stu[], int n, int sId){
     int i;
-    for( i=n-1;i<count;i++){
+    for( i=n;i<count;i++){
     stu[i]=stu[i+1];
     }
     count -= 1;
